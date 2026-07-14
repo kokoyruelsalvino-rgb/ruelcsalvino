@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+<!--
+    GITHUB PAGES READY
+    Upload this file as index.html at the repository root.
+
+    Optional personal photos can be uploaded with these exact paths:
+    images/ruel-portrait.jpg
+    images/ruel-graduation.jpg
+    images/legal-project.jpg
+    images/design-project.jpg
+    images/video-project.jpg
+
+    The site automatically uses the included online placeholders when a local
+    photo is unavailable, so it will remain complete while you add your work.
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1421,7 +1435,7 @@
         <section class="hero" id="home" aria-labelledby="hero-title">
             <div class="hero-media" aria-hidden="true">
                 <!-- Replace this editorial placeholder with Ruel's own portrait. -->
-                <img id="heroImage" src="https://images.pexels.com/photos/24425379/pexels-photo-24425379.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1400&w=1800" alt="">
+                <img id="heroImage" data-photo="hero" src="https://images.pexels.com/photos/24425379/pexels-photo-24425379.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1400&w=1800" alt="">
             </div>
             <div class="hero-content">
                 <h1 class="hero-name" id="hero-title">
@@ -1453,7 +1467,7 @@
                     <div class="reveal">
                         <div class="about-image-wrap">
                             <!-- Replace this graduation placeholder with Ruel's own photo. -->
-                            <img class="parallax-image" src="https://images.pexels.com/photos/17615714/pexels-photo-17615714.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1100&w=900" alt="Graduates celebrating at a university ceremony">
+                            <img class="parallax-image" data-photo="graduation" src="https://images.pexels.com/photos/17615714/pexels-photo-17615714.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1100&w=900" alt="University graduation ceremony">
                         </div>
                     </div>
 
@@ -1543,7 +1557,7 @@
                 <div class="project-grid" id="projectGrid" aria-live="polite">
                     <article class="project reveal" data-category="legal">
                         <button class="project-media" type="button" data-project="legal" aria-label="View details for Pleadings and Formal Briefs">
-                            <img src="https://images.pexels.com/photos/7876093/pexels-photo-7876093.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Legal workspace with documents, laptop, and Lady Justice statue">
+                            <img data-photo="legal" src="https://images.pexels.com/photos/7876093/pexels-photo-7876093.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Legal workspace with documents, laptop, and Lady Justice statue">
                         </button>
                         <div class="project-meta"><span>Legal writing</span><span>01</span></div>
                         <h3>Pleadings &amp; Formal Briefs</h3>
@@ -1552,7 +1566,7 @@
 
                     <article class="project reveal reveal-delay-1" data-category="design">
                         <button class="project-media" type="button" data-project="design" aria-label="View details for Editorial Layout Systems">
-                            <img src="https://images.pexels.com/photos/6143824/pexels-photo-6143824.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Hands reviewing an editorial design magazine on a desk">
+                            <img data-photo="design" src="https://images.pexels.com/photos/6143824/pexels-photo-6143824.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Hands reviewing an editorial design magazine on a desk">
                         </button>
                         <div class="project-meta"><span>Graphic design</span><span>02</span></div>
                         <h3>Editorial Layout Systems</h3>
@@ -1561,7 +1575,7 @@
 
                     <article class="project reveal reveal-delay-2" data-category="video">
                         <button class="project-media" type="button" data-project="video" aria-label="View details for Social Video Campaigns">
-                            <img src="https://images.pexels.com/photos/29505140/pexels-photo-29505140.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Close view of a professional video editing timeline">
+                            <img data-photo="video" src="https://images.pexels.com/photos/29505140/pexels-photo-29505140.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1000&w=800" alt="Close view of a professional video editing timeline">
                         </button>
                         <div class="project-meta"><span>Video editing</span><span>03</span></div>
                         <h3>Social Video Campaigns</h3>
@@ -1682,6 +1696,26 @@
         const mobileMenu = document.getElementById("mobileMenu");
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+        // These relative paths work on both a custom domain and a GitHub Pages project URL.
+        const localPhotoPaths = {
+            hero: "./images/ruel-portrait.jpg",
+            graduation: "./images/ruel-graduation.jpg",
+            legal: "./images/legal-project.jpg",
+            design: "./images/design-project.jpg",
+            video: "./images/video-project.jpg"
+        };
+
+        // Keep the online placeholder unless the matching personal image exists.
+        document.querySelectorAll("img[data-photo]").forEach((image) => {
+            const localPath = localPhotoPaths[image.dataset.photo];
+            if (!localPath) return;
+            const candidate = new Image();
+            candidate.onload = () => {
+                image.src = localPath;
+            };
+            candidate.src = localPath;
+        });
+
         function setMenu(open) {
             body.classList.toggle("menu-open", open);
             menuButton.setAttribute("aria-expanded", String(open));
@@ -1795,8 +1829,10 @@
             const project = projectData[projectKey];
             if (!project) return;
             lastFocusedElement = document.activeElement;
-            document.getElementById("modalImage").src = project.image;
-            document.getElementById("modalImage").alt = project.alt;
+            const cardImage = document.querySelector(`[data-project="${projectKey}"] img`);
+            const modalImage = document.getElementById("modalImage");
+            modalImage.src = cardImage ? (cardImage.currentSrc || cardImage.src) : project.image;
+            modalImage.alt = project.alt;
             document.getElementById("modalCategory").textContent = project.category;
             document.getElementById("modalTitle").textContent = project.title;
             document.getElementById("modalDescription").textContent = project.description;
